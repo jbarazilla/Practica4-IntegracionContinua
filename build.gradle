@@ -1,0 +1,60 @@
+// plugins aplicados al proyecto
+plugins {
+    // Aplica el plugin de Java
+    id 'java'
+    // Aplica el plugin de Maven para la publicación de artefactos (Artifactory)
+    id 'maven-publish' 
+    // Aplica el plugin de Checkstyle para el análisis estático
+    id 'checkstyle' 
+}
+
+group = 'com.ucam.calidad'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+// Dependencias para la compilación y pruebas
+dependencies {
+    // Dependencias para Pruebas Unitarias (JUnit 5)
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Configuración del plugin Checkstyle (Paso 4)
+checkstyle {
+    toolVersion = '10.12.1'
+    // Apunta al archivo de reglas que crearemos en el Paso 2
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml") 
+}
+
+// **CRÍTICO:** Asegura que si Checkstyle encuentra errores, la compilación falle.
+tasks.withType(Checkstyle) {
+    ignoreFailures = false 
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// Configuración para generar el artefacto JAR (Paso 5)
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Calculadora Simple CI',
+                   'Implementation-Version': version
+    }
+}
+
+// Configuramos la publicación 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
