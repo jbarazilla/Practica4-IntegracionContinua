@@ -1,0 +1,45 @@
+name: Flujo de Integración Continua (Practica 4)
+
+# Etapa 1: Inicio del Proceso
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 1. Checkout del Código (Detección de Cambios)
+      uses: actions/checkout@v4
+
+    - name: 2. Configurar JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    # --- Etapa de Validación (Paso 3 y 4) ---
+
+    - name: 3. Ejecutar Gradle Build (Compilación y Pruebas Unitarias)
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        arguments: build
+        
+    - name: 4. Ejecutar Análisis Estático de Calidad (Checkstyle)
+      # CRÍTICO: Si falla, el flujo se detiene (fail-fast)
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        arguments: checkstyleMain
+        
+    # --- Etapa de Entrega (Paso 5) ---
+        
+    - name: 5. Publicación del Artefacto a Artifactory (Simulación)
+      # SÓLO se ejecuta si todos los anteriores fueron exitosos
+      if: success()
+      run: |
+        echo "Validación de IC exitosa. Generando artefacto..."
+        ls -l build/libs/
+        echo "Artefacto (JAR) publicado exitosamente en Artifactory (Simulación)."
