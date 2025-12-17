@@ -9,7 +9,7 @@ public class CalculadoraTest {
     void testSumarCorrectamente() {
         Calculadora calc = new Calculadora();
         // Prueba unitaria OK
-        assertEquals(5, calc.sumar(2, 3), "La suma debe ser correcta");
+        assertEquals(5, calc.sumar(2, 43), "La suma debe ser correcta");
     }
 
     @Test
